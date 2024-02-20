@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const ABTestComponent = () => {
+  const [userConsent, setUserConsent] = useState(false);
   const variants = ['variantA.jpg', 'variantB.jpg'];
 
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
@@ -8,11 +9,15 @@ const ABTestComponent = () => {
 
   const handleImageClick = () => {
     setClickCount(clickCount + 1);
-
     const newVariantIndex = Math.floor(Math.random() * variants.length);
     setCurrentVariantIndex(newVariantIndex);
-
     console.log('A/B Test Interaction:', variants[newVariantIndex]);
+  };
+
+  const handleConsent = () => {
+    setUserConsent(true);
+
+    localStorage.setItem('userConsent', 'true');
   };
 
   const handleCTAButtonClick = () => {
@@ -20,6 +25,7 @@ const ABTestComponent = () => {
       event: 'CTAButtonClick',
       timestamp: new Date().toISOString(),
     };
+    console.log('Tracking Payload:', trackingPayload);
   };
 
   return (
@@ -39,7 +45,7 @@ const ABTestComponent = () => {
         </p>
         <img
           src={variants[currentVariantIndex]}
-          alt='Advertisement Image'
+          alt={`Advertisement Variant ${currentVariantIndex + 1}`}
           onClick={handleImageClick}
           style={{ cursor: 'pointer' }}
         />
@@ -47,10 +53,25 @@ const ABTestComponent = () => {
 
       <section>
         <h2>Call-to-Action (CTA)</h2>
-        <p>Click the CTA button to trigger a tracked event:</p>
-        <button onClick={handleCTAButtonClick} style={{ cursor: 'pointer' }}>
-          Learn More
-        </button>
+        {!userConsent && (
+          <div>
+            <p>
+              This website uses cookies. Do you consent to the use of cookies?
+            </p>
+            <button onClick={handleConsent}>I Consent</button>
+          </div>
+        )}
+        {userConsent && (
+          <div>
+            <p>Click the CTA button to trigger a tracked event:</p>
+            <button
+              onClick={handleCTAButtonClick}
+              style={{ cursor: 'pointer' }}
+            >
+              Learn More
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
