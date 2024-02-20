@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ABTestComponent = () => {
   const [userConsent, setUserConsent] = useState(false);
   const variants = ['variantA.jpg', 'variantB.jpg'];
-
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
-  const [clickCount, setClickCount] = useState(0);
 
   const handleImageClick = () => {
-    setClickCount(clickCount + 1);
     const newVariantIndex = Math.floor(Math.random() * variants.length);
     setCurrentVariantIndex(newVariantIndex);
     console.log('A/B Test Interaction:', variants[newVariantIndex]);
   };
 
-  const handleConsent = () => {
-    setUserConsent(true);
-
-    localStorage.setItem('userConsent', 'true');
+  const handleConsent = (consentValue) => {
+    setUserConsent(consentValue);
+    localStorage.setItem('userConsent', consentValue.toString());
   };
 
   const handleCTAButtonClick = () => {
@@ -45,7 +41,7 @@ const ABTestComponent = () => {
         </p>
         <img
           src={variants[currentVariantIndex]}
-          alt={`Advertisement Variant ${currentVariantIndex + 1}`}
+          alt={`Advertisement Variant`}
           onClick={handleImageClick}
           style={{ cursor: 'pointer' }}
         />
@@ -53,23 +49,26 @@ const ABTestComponent = () => {
 
       <section>
         <h2>Call-to-Action (CTA)</h2>
-        {!userConsent && (
+        {userConsent === false && (
           <div>
             <p>
-              This website uses cookies. Do you consent to the use of cookies?
+              You have revoked consent and you will not be able to see the
+              tracking payload!!Click the button to give consent again.
             </p>
-            <button onClick={handleConsent}>I Consent</button>
+            <button onClick={() => handleConsent(true)}>Give Consent</button>
           </div>
         )}
-        {userConsent && (
+        {userConsent === true && (
           <div>
-            <p>Click the CTA button to trigger a tracked event:</p>
+            <p>Click the CTA button to trigger a tracked event in console</p>
             <button
               onClick={handleCTAButtonClick}
               style={{ cursor: 'pointer' }}
             >
-              Learn More
+              Tracked Event
             </button>
+            <p>Click the button below to revoke consent:</p>
+            <button onClick={() => handleConsent(false)}>Revoke Consent</button>
           </div>
         )}
       </section>
