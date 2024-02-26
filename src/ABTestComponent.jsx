@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 const ABTestComponent = () => {
   const [userConsent, setUserConsent] = useState(false);
-  const variants = ['variantA.jpg', 'variantB.jpg'];
-  const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
+  const [variant, setVariant] = useState('');
 
-  const handleImageClick = () => {
-    const newVariantIndex = Math.floor(Math.random() * variants.length);
-    setCurrentVariantIndex(newVariantIndex);
-    console.log('A/B Test Interaction:', variants[newVariantIndex]);
-  };
+  useEffect(() => {
+    const randomVariant =
+      Math.random() <= 0.5 ? 'variantA.jpg' : 'variantB.jpg';
+    setVariant(randomVariant);
+    console.log('A/B Test Interaction (Page Load):', randomVariant);
+  }, []);
 
   const handleConsent = (consentValue) => {
     setUserConsent(consentValue);
@@ -36,13 +36,12 @@ const ABTestComponent = () => {
       <section>
         <h2>A/B Test Dynamic Section</h2>
         <p>
-          Help us choose the best image! Click the image to see different
-          variants:
+          Help us choose the best image! This variant is randomly selected on
+          page load:
         </p>
         <img
-          src={variants[currentVariantIndex]}
+          src={variant}
           alt={`Advertisement Variant`}
-          onClick={handleImageClick}
           style={{ cursor: 'pointer' }}
         />
       </section>
@@ -53,7 +52,7 @@ const ABTestComponent = () => {
           <div>
             <p>
               You have revoked consent and you will not be able to see the
-              tracking payload!!Click the button to give consent again.
+              tracking payload! Click the button to give consent again.
             </p>
             <button onClick={() => handleConsent(true)}>Give Consent</button>
           </div>
